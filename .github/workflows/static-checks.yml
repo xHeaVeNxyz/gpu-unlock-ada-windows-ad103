@@ -1,0 +1,33 @@
+name: Static source checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  source-only:
+    name: Source-only validation (no EFI execution)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Python source syntax
+        run: python3 -m py_compile tools/build_stage62.py tools/verify_stage62.py src/tools/pe_format.py
+      - name: Reject committed executable and private artifact patterns
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import subprocess, pathlib, sys
+          names = subprocess.check_output(["git","ls-files","-z"]).decode().split("\0")
+          suffixes = {".efi",".rom",".bin",".vbios",".exe",".sys",".pdb",".obj"}
+          bad = [p for p in names if p and (
+            pathlib.PurePosixPath(p).suffix.lower() in suffixes
+            or p.startswith(("src/local/","private/","captures/","evidence/"))
+          )]
+          if bad:
+            print("Disallowed tracked paths:", *bad, sep="\n")
+            sys.exit(1)
+          print("PASS: source only, no binary/private path patterns")
+          PY
+# This workflow neither compiles nor boots UEFI. No hardware test is implied.
