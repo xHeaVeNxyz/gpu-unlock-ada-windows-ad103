@@ -1,19 +1,29 @@
-# Eksperymentalny GPU Unlock Ada — Windows / AD103
+# GPU Unlock Ada — eksperymentalny port Windows / AD103 (Stage 62)
 
-**Stan projektu:** Stage 62, eksperyment na jednym komputerze z 26 października 2026 r. Repozytorium jest prywatne i początkowo zawiera dokumentację. Źródła Stage 62 zostały przygotowane w osobnej paczce do publikacji.
+**Stan na 26.10.2026 • badania na jednym komputerze • brak stabilnej wersji**
 
-## Sprzęt
+Repozytorium zawiera **komplet opublikowanych źródeł Stage 62**, skrypty do kompilacji i weryfikacji offline, dokumentację testów oraz licencje. Dotyczy eksperymentów z **Gigabyte RTX 4070 Ti SUPER Windforce OC 16 GB** (AD103, `10DE:2705`) pod Windows 11 x64.
 
-- Gigabyte GeForce RTX 4070 Ti SUPER Windforce OC, 16 GB (AD103, PCI `10DE:2705`)
-- MSI PRO B650S WIFI
-- Windows 11 x64, sterownik NVIDIA 621.01, CUDA 13.4
-- VBIOS AORUS wgrany na kartę Gigabyte — **nie jest to test fabrycznego VBIOS-u Windforce**
+> [!CAUTION]
+> Kod wykonuje eksperymentalne operacje UEFI na sprzęcie. Uruchomienie skompilowanego EFI grozi utratą obrazu lub problemami z rozruchem. Konfiguracja Stage 62 **nie zapewnia sprawdzonego rollbacku ani awaryjnego przełączenia na AMD iGPU**. Nie jest to gotowe, uniwersalne narzędzie.
 
-## Wynik
+## Przetestowana konfiguracja
 
-Log Stage 62 wykazał `Transaction result=0` i `TRANSACTION OK`. Następnie karta była wykrywana w Windows.
+| Element | Dane |
+|---|---|
+| GPU | Gigabyte RTX 4070 Ti SUPER Windforce OC, 16 GB |
+| Identyfikator | PCI `10DE:2705`, subsystem `1458:4136` |
+| VBIOS | AORUS po cross-flashu (nie fabryczny Windforce) |
+| Płyta główna | MSI PRO B650S WIFI |
+| System | Windows 11 x64 |
+| Sterownik / CUDA | NVIDIA 621.01 / CUDA 13.4 |
+| Etap eksperymentu | Stage 62 — sprawdzanie mapowania DMA z pustym tokenem |
 
-| Operacja | Najlepszy odnotowany wynik |
+W logu próby odnotowano `Transaction result=0` oraz `TRANSACTION OK`. Windows następnie się uruchomił. To **jedna obserwacja na określonym sprzęcie**, a nie gwarancja zgodności innych kart.
+
+## Benchmark CUDA
+
+| Operacja | Zgłoszony najlepszy wynik |
 |---|---:|
 | FP16 → FP16 | 190,6 TFLOPS |
 | FP16 → FP32 | 190,5 TFLOPS |
@@ -21,10 +31,18 @@ Log Stage 62 wykazał `Transaction result=0` i `TRANSACTION OK`. Następnie kart
 | INT8 → INT32 | 379,9 TOPS |
 | FP32 FFMA | 45,6 TFLOPS |
 
-**To nie jest udokumentowany wzrost wydajności 2× na tej konkretnej karcie.** Brakuje kontrolowanego pomiaru sprzed modyfikacji na identycznym sprzęcie. Test MMA nie mierzy FPS ani rzeczywistej wydajności aplikacji.
+Są to wyniki **syntetycznego benchmarku instrukcji**, nie FPS w grach. Wynik FFMA jest zachowany w oryginalnym lokalnym transkrypcie, a szczytowe wartości Tensor pochodzą z podsumowania testów. **Nie mamy pomiaru sprzed odblokowania na tej samej karcie w identycznych warunkach**, więc nie można stwierdzić, że w tym przypadku osiągnięto wzrost o 2×.
 
-## Ostrzeżenie
+## Dokumentacja
 
-Aktywne eksperymenty UEFI z FWSEC, DMA, FLR i przekazaniem GPU sterownikowi mogą uniemożliwić uruchomienie Windows lub odzyskanie obrazu. Nie ma gwarantowanego automatycznego cofnięcia zmian. Nie publikujemy plików EFI, firmware NVIDIA, ROM-ów, numerów UUID ani prywatnych danych z logów.
+- [Pełne wyniki i ograniczenia](docs/RESULTS.md)
+- [Instrukcje kompilacji i sprawdzania kodu offline](docs/BUILD.md)
+- [Architektura i najważniejsze pliki](docs/ARCHITECTURE.md)
+- [Zagrożenia i zasady publikacji](docs/SAFETY.md)
+- [Zestawienie benchmarków CSV](data/benchmark-summary.csv)
+- [Historia projektu](CHANGELOG.md)
+- [English README](README.md)
 
-Opis po angielsku: [README](README.md). Dane pomiarowe: [RESULTS](docs/RESULTS.md).
+Źródła znajdują się w katalogu [`src/`](src/), a skrypty w [`tools/`](tools/). Kompilator tworzy **aktywny, ryzykowny plik EFI** — sama kompilacja nie stanowi testu bezpieczeństwa. Nie publikujemy prywatnego `src/local/boot_profile.h`, obrazów firmware, plików ROM, wynikowych EFI ani nieoczyszczonych logów z danymi systemowymi.
+
+Projekt opiera się na wcześniejszych pracach GPL-2.0-only. Zachowano [licencje](LICENSE), [informacje o autorach](THIRD_PARTY_NOTICES.md) i [dodatkowe licencje](LICENSES/). Nie jest powiązany z NVIDIA ani przez nią wspierany.
