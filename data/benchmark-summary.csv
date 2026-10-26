@@ -1,0 +1,6 @@
+date,device,operation,peak_value,unit,record_type,notes
+2026-10-26,RTX 4070 Ti SUPER AD103,FP16 to FP16,190.6,TFLOPS,reported synthetic benchmark,Peak from experiment notes not a controlled before-after comparison
+2026-10-26,RTX 4070 Ti SUPER AD103,FP16 to FP32,190.5,TFLOPS,reported synthetic benchmark,Peak from experiment notes not a controlled before-after comparison
+2026-10-26,RTX 4070 Ti SUPER AD103,BF16 to FP32,189.9,TFLOPS,reported synthetic benchmark,Peak from experiment notes not a controlled before-after comparison
+2026-10-26,RTX 4070 Ti SUPER AD103,INT8 to INT32,379.9,TOPS,reported synthetic benchmark,Peak from experiment notes not a controlled before-after comparison
+2026-10-26,RTX 4070 Ti SUPER AD103,FP32 FFMA,45.6,TFLOPS,recorded in PowerShell MMA transcript,20k iterations / 3 repeats; original transcript retained privately
