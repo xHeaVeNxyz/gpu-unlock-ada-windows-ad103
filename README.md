@@ -1,52 +1,64 @@
-# Experimental GPU Unlock Ada — Windows UEFI AD103 / RTX 4070 Ti SUPER
+# GPU Unlock Ada on Windows — Experimental AD103 / Stage 62
 
-**Status:** Stage 62 research snapshot, single-machine experiment (2026-10-26). Not a general-purpose unlocker or a ready-to-run release.
+**Research snapshot • 26 October 2026 • Single tested system • No stable release**
 
-This repository documents experiments with an Ada-generation NVIDIA GeForce RTX 4070 Ti SUPER (AD103, PCI ID `10DE:2705`) and a Windows x64 UEFI port derived from [GPU Unlock Ada](https://github.com/JustAResearcher/gpu-unlock-ada) and [Windows-GPU-UNLOCK](https://github.com/impacifist/Windows-GPU-UNLOCK).
+Experimental UEFI / Windows x64 research on a **Gigabyte GeForce RTX 4070 Ti SUPER Windforce OC 16 GB (NVIDIA AD103, PCI ID `10DE:2705`)**. This repository contains the **Stage 62 C source**, offline build/verification scripts, test documentation and third-party license notices.
 
-> **Hardware risk:** This experimental UEFI path can affect firmware execution, GPU/DMA state, PCIe function reset and the Windows graphics handoff. It can result in no video output or an unbootable system. There is no validated universal rollback procedure. Cloning or reading the repository does not execute the firmware.
+> [!CAUTION]
+> This is **active, hardware-mutating UEFI research code**, not a safe universal GPU unlocker. A built EFI program may leave the system without video output or an operable boot path. The active Stage 62 configuration has **no validated rollback or AMD fallback**. Do not execute a generated EFI payload on the basis of these results.
 
-## Tested configuration
+## Snapshot at a glance
 
-| Component | Test system |
+| Topic | Details |
 |---|---|
-| Graphics card | Gigabyte GeForce RTX 4070 Ti SUPER Windforce OC 16 GB (AD103) |
-| PCI device | `10DE:2705` |
+| GPU | Gigabyte RTX 4070 Ti SUPER Windforce OC 16 GB, AD103 |
+| Hardware profile | PCI `10DE:2705`; subsystem `1458:4136` |
+| VBIOS used | Cross-flashed AORUS firmware (**not** stock Windforce) |
 | Motherboard | MSI PRO B650S WIFI |
-| Operating system | Windows 11 x64 |
-| NVIDIA driver during benchmark | 621.01 |
-| CUDA | CUDA Toolkit 13.4 |
-| Firmware context | Cross-flashed AORUS VBIOS; **do not assume stock-card compatibility** |
-| Experiment date | 26 October 2026 |
+| Software observed | Windows 11 x64; NVIDIA driver 621.01; CUDA Toolkit 13.4 |
+| Experimental milestone | Stage 62 — DMA identity mapping / null mapping token handling |
+| Observed outcome | Local log reported `Transaction result=0` / `TRANSACTION OK`; Windows subsequently started |
+| Validation scope | One computer and one experimental firmware profile; no cross-device qualification |
 
-The Stage 62 experimental log reported `Transaction result=0` and `TRANSACTION OK`. Windows subsequently initialized and detected the NVIDIA GPU. Those are **observations from one system**, not independent proof of general compatibility or long-term stability.
+Successful status messages describe **one observation**, not proof of a generally reliable unlock or quantified performance gain.
 
-## CUDA MMA benchmark
+## Synthetic CUDA MMA results
 
-Selected peaks observed after the experiment:
+| Operation | Reported peak |
+|---|---:|
+| FP16 → FP16 | 190.6 TFLOPS |
+| FP16 → FP32 | 190.5 TFLOPS |
+| BF16 → FP32 | 189.9 TFLOPS |
+| INT8 → INT32 | 379.9 TOPS |
+| FP32 FFMA | 45.6 TFLOPS |
 
-| CUDA MMA mode | Peak | Unit |
-|---|---:|---|
-| FP16 → FP16 | 190.6 | TFLOPS |
-| FP16 → FP32 | 190.5 | TFLOPS |
-| BF16 → FP32 | 189.9 | TFLOPS |
-| INT8 → INT32 | 379.9 | TOPS |
-| FP32 FFMA | 45.6 | TFLOPS |
+These are **synthetic instruction-level peaks**, not measured gaming FPS, DLSS or real application results. The FP32 FFMA figure is present in an original local PowerShell MMA transcript; Tensor-mode peaks are taken from the contemporaneous test summary. There is **no controlled, same-card pre-unlock baseline** demonstrating a specific speedup on this machine.
 
-**Interpretation:** These are instruction-level measurements, **not** real-world FPS, gaming, DLSS, LLM or GEMM throughput guarantees. No same-card, same-conditions pre-unlock baseline was preserved. Therefore a measured 2× speedup **on this card** is **not established**. See [the benchmark methodology and limitations](docs/RESULTS.md).
+Details: [results and limitations](docs/RESULTS.md) · [machine-readable summary](data/benchmark-summary.csv)
 
-## Source code and provenance
+## Repository guide
 
-The Stage 62 source package was prepared separately with its `src/`, `tools/`, license notices and safety checks. The complete code will be published in this repository only after sanitized-source transfer; do not treat a documentation-only checkout as a buildable release. This repository will not include GPU ROM dumps, NVIDIA firmware images, private boot partition GUIDs, machine-unique IDs or compiled EFI payloads.
+| Resource | Purpose |
+|---|---|
+| [`src/`](src/) | Stage 62 UEFI research code, adapter, host-test fixture and vendored headers |
+| [`tools/`](tools/) | Offline builder and verifier (builder outputs an **active** EFI program) |
+| [Build / offline verification](docs/BUILD.md) | Prerequisites, source checks and explicit build risk |
+| [Architecture](docs/ARCHITECTURE.md) | Layout, guarded firmware flow and Stage 62 change |
+| [Safety & scope](docs/SAFETY.md) | Hardware risks, evidence boundaries and redistribution |
+| [Experimental results](docs/RESULTS.md) | Synthetic measurements, methodology and caveats |
+| [Changelog](CHANGELOG.md) | Research milestone notes |
+| [Polska wersja](README_PL.md) | Dokumentacja po polsku |
 
-The underlying works retain their own licenses. Original GPU Unlock Ada and UEFI port: GPL-2.0-only; separately licensed vendor and EDK II components must retain their notices. No NVIDIA endorsement is implied.
+A GitHub Actions source-only workflow performs a syntax check and checks for disallowed binary/private paths. **It does not build, flash or execute firmware and is not a hardware safety test.**
 
-## Reproducibility and limitations
+## Reproducibility and excluded assets
 
-- Observed with one specific AD103 board and cross-flashed firmware profile.
-- No cross-machine replication or controlled same-device before/after run.
-- Firmware execution, DMA, PCIe FLR and graphics handoff are hazardous and require independent hardware/firmware safety review.
-- Do not install or boot experimental EFI files solely on the basis of the benchmark table.
-- Raw Windows PowerShell transcripts and GPU dumps are intentionally not public because they can contain device identifiers and user paths.
+The source and test scripts are available, but building the active branch requires a *separately reviewed, private* machine-specific `src/local/boot_profile.h`. The repository deliberately excludes firmware blobs, VBIOS/PROM dumps, compiled EFI artifacts, private partition identifiers, GPU UUIDs and raw system logs. See [BUILD.md](docs/BUILD.md) for offline-only instructions.
 
-[Dokumentacja po polsku](README_PL.md)
+Do not treat a passing host test, profile pin or signed-off commit as a safety or compatibility certification. No universal installation or recovery instructions are offered.
+
+## Upstream and license notices
+
+The work derives from [gpu-unlock-ada](https://github.com/JustAResearcher/gpu-unlock-ada) and [Windows-GPU-UNLOCK](https://github.com/impacifist/Windows-GPU-UNLOCK), with additional earlier work acknowledged in [third-party notices](THIRD_PARTY_NOTICES.md) and [upstream Windows notices](UPSTREAM-WINDOWS-NOTICES.md). Core research sources retain GPL-2.0-only terms, and EDK II / other materials retain their respective license notices in [LICENSES/](LICENSES/).
+
+**Not affiliated with or endorsed by NVIDIA.**
