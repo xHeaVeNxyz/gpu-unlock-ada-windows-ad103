@@ -1,0 +1,25 @@
+# Never commit local firmware or boot configuration
+*.efi
+*.EFI
+*.rom
+*.ROM
+*.bin
+*.vbios
+*.vBIOS
+*.exe
+*.pdb
+*.obj
+*.o
+*.sys
+src/local/
+**/local/
+build/
+**/build/
+captures/
+evidence/
+private/
+RUN*.TXT
+CAP*.JSON
+*private*log*
+__pycache__/
+*.pyc
