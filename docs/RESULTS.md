@@ -40,6 +40,21 @@ Reported original MMA configuration: `mma_bench.cu`, CUDA 13.4, Ada SM89, 20,000
 CSV with summarized figures: [`data/benchmark-summary.csv`](../data/benchmark-summary.csv).  
 Code and offline checks: [BUILD](BUILD.md). Risks: [SAFETY](SAFETY.md).
 
-## 4. Source attribution
+
+## 4. Ollama LLM application benchmark — operator-reported comparison (2026-10-27)
+
+A subsequent Windows 11 test used **Ollama 0.40.11**, model `qwen3.5:4b-bf16` (BF16, about 8.9 GB as shown by `ollama ps`), on the same RTX 4070 Ti SUPER AD103. Ollama reported **100% GPU** placement and a **4096-token context**. Each selected series consisted of three runs with approximately 3,950–3,960 prompt tokens, no cached prompt tokens, and about 138–144 generated tokens. Values below are the benchmark script's **reported three-run averages** (tokens/second).
+
+| Operator-reported state | Series | Prompt processing / prefill (tok/s) | Generation / decode (tok/s) |
+|---|---|---:|---:|
+| OFF (normal Windows boot) | Baseline | **7,901.9** | 64.8 |
+| ON (Stage 62 boot) | Selected repeat 1 | **10,576.2** | 62.8 |
+| ON (Stage 62 boot) | Selected repeat 2 | **10,081.7** | 60.6 |
+
+Compared with the OFF run, the two selected ON measurements show **+33.8%** and **+27.6%** higher prefill throughput, respectively. Decode was **3.1%** and **6.5%** lower. The first ON benchmark series included a slower warm-up trial and was excluded from this selected comparison; later trials were more stable. Some displayed runs were labeled `-Mode OFF` even though the operator subsequently clarified that Stage 62 had been started. **The script's ON/OFF flag is merely a user-provided label; it neither enables nor verifies a firmware unlock.** The ON #2 label in the table reflects that correction.
+
+**Evidence and limitations:** These figures were read from user-supplied PowerShell screenshots. No raw transcripts containing private host details or GPU identifiers are published. The runs were not clock-, power-, thermal-, driver-, or reboot-controlled, and the reported firmware state was not independently corroborated during each LLM benchmark. They represent an **observed association**, not proof that the firmware change alone caused the prefill difference. There is no measured application-speedup claim for gaming, DLSS, or arbitrary LLM workloads; prefill and decode have different bottlenecks. See [machine-readable Ollama summary](../data/ollama-benchmark-summary.csv).
+
+## 5. Source attribution
 
 See the project's [license](../LICENSE), [upstream notices](../UPSTREAM-WINDOWS-NOTICES.md), and [third-party notices](../THIRD_PARTY_NOTICES.md). NVIDIA firmware binaries are not included.
