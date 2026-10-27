@@ -33,6 +33,21 @@ W logu próby odnotowano `Transaction result=0` oraz `TRANSACTION OK`. Windows n
 
 Są to wyniki **syntetycznego benchmarku instrukcji**, nie FPS w grach. Wynik FFMA jest zachowany w oryginalnym lokalnym transkrypcie, a szczytowe wartości Tensor pochodzą z podsumowania testów. **Nie mamy pomiaru sprzed odblokowania na tej samej karcie w identycznych warunkach**, więc nie można stwierdzić, że w tym przypadku osiągnięto wzrost o 2×.
 
+
+## Benchmark LLM w Ollama — 27.10.2026
+
+W teście użytkownika na tej samej karcie uruchomiono **Ollama 0.40.11** z modelem `qwen3.5:4b-bf16` (BF16). Polecenie `ollama ps` wskazało **100% GPU**, a rozmiar kontekstu wynosił **4096 tokenów**. Każda z wybranych serii to średnia z trzech prób: około 3950–3960 tokenów wejściowych, bez buforowanych tokenów promptu, oraz około 138–144 tokenów wyjściowych.
+
+| Stan podany przez użytkownika | Prefill (tok./s) | Decode (tok./s) |
+|---|---:|---:|
+| OFF — normalny rozruch Windows | **7 901,9** | 64,8 |
+| ON — wybrany test 1 | **10 576,2** | 62,8 |
+| ON — wybrany test 2 | **10 081,7** | 60,6 |
+
+Dla powyższych serii różnica w **prefill** wyniosła **+33,8%** i **+27,6%** względem OFF; **decode nie przyspieszył** (odpowiednio około −3,1% i −6,5%). Użytkownik sprostował, że ostatnią serię oznaczoną w skrypcie jako `-Mode OFF` wykonał w rzeczywistości po uruchomieniu Stage 62. Parametr ON/OFF **tylko etykietuje wynik** i sam nie potwierdza stanu firmware.
+
+**Ograniczenia:** Dane pochodzą ze zrzutów PowerShell, nie z niezależnego pomiaru stanu GPU. Nie kontrolowano w pełni zegarów, temperatur, zasilania, sterownika ani warunków rozruchu. Wynik jest **wstępnym porównaniem obserwacyjnym**, nie udowodnionym przyspieszeniem spowodowanym wyłącznie GPU Unlock. [Szczegóły i metodologia](docs/RESULTS.md) · [Dane CSV](data/ollama-benchmark-summary.csv).
+
 ## Dokumentacja
 
 - [Pełne wyniki i ograniczenia](docs/RESULTS.md)
