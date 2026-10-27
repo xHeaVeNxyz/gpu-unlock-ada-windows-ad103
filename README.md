@@ -38,7 +38,7 @@ Details: [results and limitations](docs/RESULTS.md) · [machine-readable summary
 
 ## Ollama BF16 LLM follow-up (27 October 2026)
 
-On `qwen3.5:4b-bf16` (Ollama 0.40.11, reported 100% GPU), the operator reported **7,901.9 prefill tokens/s OFF** versus **10,576.2** and **10,081.7 tokens/s ON** in two selected three-run series (**+33.8%** and **+27.6%**). Decode throughput did **not** improve. The operator corrected a misleading `-Mode OFF` script label for the second ON result. This was **not a controlled causal test**: ON/OFF labels rely on operator-reported boot state, not independent unlock verification, and clocks, power, and temperature were not controlled. See [test details](docs/RESULTS.md#4-ollama-llm-application-benchmark--operator-reported-comparison-2026-10-27) and [CSV](data/ollama-benchmark-summary.csv).
+On `qwen3.5:4b-bf16` (Ollama 0.40.11, reported 100% GPU), the operator reported **7,901.9 prefill tokens/s OFF** versus **10,576.2** and **10,081.7 tokens/s ON** in two selected three-run series (**+33.8%** and **+27.6%**). Decode throughput did **not** improve. See [test details](docs/RESULTS.md#4-ollama-llm-application-benchmark--operator-reported-comparison-2026-10-27) and [CSV](data/ollama-benchmark-summary.csv).
 
 ## Repository guide
 
