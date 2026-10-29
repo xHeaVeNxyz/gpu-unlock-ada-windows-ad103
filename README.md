@@ -36,6 +36,14 @@ These are **synthetic instruction-level peaks**, not measured gaming FPS, DLSS o
 
 Details: [results and limitations](docs/RESULTS.md) · [machine-readable summary](data/benchmark-summary.csv)
 
+## Updated ON/OFF benchmark — 28 October 2026
+
+A new paired run (2 warm-ups + 3 measured passes per operation and mode) reported **FP16→FP32: 98.13 → 196.40 TFLOPS (+100.1%)** and **BF16→FP32: 97.60 → 195.87 TFLOPS (+100.7%)** in operator-labeled OFF vs ON boots. Six Ollama models showed **no comparable 512-token decode gain** (individual differences: −0.11% to +0.72%). Peak sampled VRAM use was **15,981 / 16,376 MiB (97.6%)** in the ON-labeled session.
+
+> **Evidence limit:** Both sessions report `unlock_verified=false`; the labels are operator-selected. The numbers do not independently establish that any additional Tensor Cores were unlocked.
+
+📊 **[Full ON/OFF tables, methodology, VRAM and download-friendly CSVs](docs/BENCHMARKS-2026-10-28.md)**
+
 ## Ollama BF16 LLM follow-up (27 October 2026)
 
 On `qwen3.5:4b-bf16` (Ollama 0.40.11, reported 100% GPU), the operator reported **7,901.9 prefill tokens/s OFF** versus **10,576.2** and **10,081.7 tokens/s ON** in two selected three-run series (**+33.8%** and **+27.6%**). Decode throughput did **not** improve. See [test details](docs/RESULTS.md#4-ollama-llm-application-benchmark--operator-reported-comparison-2026-10-27) and [CSV](data/ollama-benchmark-summary.csv).
