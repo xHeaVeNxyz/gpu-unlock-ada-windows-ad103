@@ -1,0 +1,3 @@
+date,mode,samples,total_vram_mib,max_sampled_vram_used_mib,max_sampled_gpu_util_pct,max_sampled_temperature_c,max_sampled_power_w,unlock_verified
+2026-10-28,OFF,932,16376,15907,100,63.37,264.24,false
+2026-10-28,ON,924,16376,15981,100,61.15,249.90,false
