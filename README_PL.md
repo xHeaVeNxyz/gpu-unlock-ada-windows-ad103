@@ -34,6 +34,14 @@ W logu próby odnotowano `Transaction result=0` oraz `TRANSACTION OK`. Windows n
 Są to wyniki **syntetycznego benchmarku instrukcji**, nie FPS w grach. Wynik FFMA jest zachowany w oryginalnym lokalnym transkrypcie, a szczytowe wartości Tensor pochodzą z podsumowania testów. **Nie mamy pomiaru sprzed odblokowania na tej samej karcie w identycznych warunkach**, więc nie można stwierdzić, że w tym przypadku osiągnięto wzrost o 2×.
 
 
+## Nowe wyniki ON/OFF — 28.10.2026
+
+W kolejnej serii (2 przebiegi rozgrzewkowe + 3 pomiarowe) testy syntetyczne wykazały **FP16→FP32: 98,13 → 196,40 TFLOPS (+100,1%)** i **BF16→FP32: 97,60 → 195,87 TFLOPS (+100,7%)** pomiędzy trybami oznaczonymi OFF i ON. W sześciu modelach Ollama nie zaobserwowano porównywalnego przyspieszenia generowania 512 tokenów (różnice od −0,11% do +0,72%). W trybie ON zanotowano maksymalnie **15 981 / 16 376 MiB VRAM (97,6%)**.
+
+> **Zastrzeżenie:** `unlock_verified=false` w obu raportach. ON/OFF to etykiety deklarowanego sposobu uruchomienia; wyniki nie potwierdzają niezależnie odblokowania dodatkowych jednostek Tensor.
+
+📊 **[Pełne tabele ON/OFF, opis testów i dane CSV](docs/BENCHMARKS-2026-10-28.md)**
+
 ## Benchmark LLM w Ollama — 27.10.2026
 
 W teście użytkownika na tej samej karcie uruchomiono **Ollama 0.40.11** z modelem `qwen3.5:4b-bf16` (BF16). Polecenie `ollama ps` wskazało **100% GPU**, a rozmiar kontekstu wynosił **4096 tokenów**. Każda z wybranych serii to średnia z trzech prób: około 3950–3960 tokenów wejściowych, bez buforowanych tokenów promptu, oraz około 138–144 tokenów wyjściowych.
