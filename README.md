@@ -22,6 +22,60 @@ Experimental UEFI / Windows x64 research on a **Gigabyte GeForce RTX 4070 Ti SUP
 
 Successful status messages describe **one observation**, not proof of a generally reliable unlock or quantified performance gain.
 
+## 📊 GPU benchmarks — ON vs OFF (28 October 2026)
+
+**RTX 4070 Ti SUPER AD103 • Windows 11 • Two warm-up runs + three measured runs per test**
+
+> [!IMPORTANT]
+> **ON and OFF are operator-selected labels, not independently verified GPU unlock states** (`unlock_verified=false` in both sessions). The CUDA MMA measurements show a selective ~2× difference in FP16→FP32 and BF16→FP32, **not proof of unlocking additional cores**. The Ollama tests do not show a corresponding gain in token generation.
+
+### CUDA MMA — synthetic GPU compute
+
+| Test | OFF | ON | Change | Unit |
+|:--|--:|--:|--:|:--|
+| **FP16 → FP32** | **98.13** | **196.40** | **+100.1% (2.00×)** | TFLOPS |
+| **BF16 → FP32** | **97.60** | **195.87** | **+100.7% (2.01×)** | TFLOPS |
+| FP16 → FP16 | 196.03 | 196.30 | +0.1% | TFLOPS |
+| INT8 → INT32 | 391.73 | 391.30 | −0.1% | TOPS |
+| DP4A | 97.47 | 96.10 | −1.4% | TOPS |
+| FP32 FFMA | 46.93 | 47.00 | +0.1% | TFLOPS |
+
+### Ollama — generation at 512 tokens
+
+| Model | OFF (tok/s) | ON (tok/s) | Change |
+|:--|--:|--:|--:|
+| `gpt-oss:20b` | 141.72 | 141.59 | −0.09% |
+| `gemma4:26b` | 104.93 | 105.60 | +0.64% |
+| `qwen3.5:27b` | 11.39 | 11.42 | +0.31% |
+| `gemma4:31b` | 12.08 | 12.10 | +0.18% |
+| `qwen3:30b` | 92.00 | 92.66 | +0.72% |
+| `qwen3.5:35b` | 86.87 | 86.78 | −0.11% |
+
+### Ollama — unique-prompt prefill
+
+| Model | OFF (tok/s) | ON (tok/s) | Change |
+|:--|--:|--:|--:|
+| `gpt-oss:20b` | 7,278.10 | 7,596.89 | **+4.38%** |
+| `gemma4:26b` | 2,544.47 | 2,530.97 | −0.53% |
+| `qwen3.5:27b` | 1,147.86 | 1,149.36 | +0.13% |
+| `gemma4:31b` | 681.35 | 682.93 | +0.23% |
+| `qwen3:30b` | 3,277.27 | 3,309.49 | +0.98% |
+| `qwen3.5:35b` | 2,265.20 | 2,277.04 | +0.52% |
+
+### VRAM and GPU telemetry
+
+| Metric | OFF | ON |
+|:--|--:|--:|
+| Peak observed VRAM use | **15,907 / 16,376 MiB (97.1%)** | **15,981 / 16,376 MiB (97.6%)** |
+| Peak sampled GPU utilization | 100% | 100% |
+| Peak sampled temperature | 63.37 °C | 61.15 °C |
+| Peak sampled power draw | 264.24 W | 249.90 W |
+| Monitoring samples | 932 | 924 |
+
+All values above come from the October 28 paired operator-labeled sessions. Tensor results are synthetic instruction-level throughput; VRAM/power/temp are **sampled peaks**, not continuous maxima. Several LLMs used **CPU offload**, so the Ollama figures cannot be treated as isolated Tensor Core performance. Results have not been causally attributed to firmware modifications.
+
+📁 **[Full results, 256-token tests, methodology, limitations & downloadable CSV files](docs/BENCHMARKS-2026-10-28.md)**
+
 ## Synthetic CUDA MMA results
 
 | Operation | Reported peak |
@@ -35,14 +89,6 @@ Successful status messages describe **one observation**, not proof of a generall
 These are **synthetic instruction-level peaks**, not measured gaming FPS, DLSS or real application results. The FP32 FFMA figure is present in an original local PowerShell MMA transcript; Tensor-mode peaks are taken from the contemporaneous test summary. There is **no controlled, same-card pre-unlock baseline** demonstrating a specific speedup on this machine.
 
 Details: [results and limitations](docs/RESULTS.md) · [machine-readable summary](data/benchmark-summary.csv)
-
-## Updated ON/OFF benchmark — 28 October 2026
-
-A new paired run (2 warm-ups + 3 measured passes per operation and mode) reported **FP16→FP32: 98.13 → 196.40 TFLOPS (+100.1%)** and **BF16→FP32: 97.60 → 195.87 TFLOPS (+100.7%)** in operator-labeled OFF vs ON boots. Six Ollama models showed **no comparable 512-token decode gain** (individual differences: −0.11% to +0.72%). Peak sampled VRAM use was **15,981 / 16,376 MiB (97.6%)** in the ON-labeled session.
-
-> **Evidence limit:** Both sessions report `unlock_verified=false`; the labels are operator-selected. The numbers do not independently establish that any additional Tensor Cores were unlocked.
-
-📊 **[Full ON/OFF tables, methodology, VRAM and download-friendly CSVs](docs/BENCHMARKS-2026-10-28.md)**
 
 ## Ollama BF16 LLM follow-up (27 October 2026)
 
