@@ -21,6 +21,60 @@ Repozytorium zawiera **komplet opublikowanych źródeł Stage 62**, skrypty do k
 
 W logu próby odnotowano `Transaction result=0` oraz `TRANSACTION OK`. Windows następnie się uruchomił. To **jedna obserwacja na określonym sprzęcie**, a nie gwarancja zgodności innych kart.
 
+## 📊 Wyniki benchmarków GPU — ON vs OFF (28.10.2026)
+
+**RTX 4070 Ti SUPER AD103 • Windows 11 • 2 przebiegi rozgrzewkowe + 3 pomiarowe na test**
+
+> [!IMPORTANT]
+> **ON i OFF są etykietami podanymi przez użytkownika, a nie niezależnie potwierdzonym stanem odblokowania GPU** (`unlock_verified=false` w obu sesjach). Testy CUDA MMA wykazały około dwukrotną różnicę FP16→FP32 i BF16→FP32, ale **nie jest to dowód odblokowania dodatkowych rdzeni**. Benchmarki Ollama nie potwierdziły podobnego wzrostu szybkości generowania.
+
+### CUDA MMA — test syntetyczny
+
+| Test | OFF | ON | Zmiana | Jednostka |
+|:--|--:|--:|--:|:--|
+| **FP16 → FP32** | **98,13** | **196,40** | **+100,1% (2,00×)** | TFLOPS |
+| **BF16 → FP32** | **97,60** | **195,87** | **+100,7% (2,01×)** | TFLOPS |
+| FP16 → FP16 | 196,03 | 196,30 | +0,1% | TFLOPS |
+| INT8 → INT32 | 391,73 | 391,30 | −0,1% | TOPS |
+| DP4A | 97,47 | 96,10 | −1,4% | TOPS |
+| FP32 FFMA | 46,93 | 47,00 | +0,1% | TFLOPS |
+
+### Ollama — generowanie 512 tokenów
+
+| Model | OFF (tok./s) | ON (tok./s) | Zmiana |
+|:--|--:|--:|--:|
+| `gpt-oss:20b` | 141,72 | 141,59 | −0,09% |
+| `gemma4:26b` | 104,93 | 105,60 | +0,64% |
+| `qwen3.5:27b` | 11,39 | 11,42 | +0,31% |
+| `gemma4:31b` | 12,08 | 12,10 | +0,18% |
+| `qwen3:30b` | 92,00 | 92,66 | +0,72% |
+| `qwen3.5:35b` | 86,87 | 86,78 | −0,11% |
+
+### Ollama — przetwarzanie unikalnego promptu (prefill)
+
+| Model | OFF (tok./s) | ON (tok./s) | Zmiana |
+|:--|--:|--:|--:|
+| `gpt-oss:20b` | 7 278,10 | 7 596,89 | **+4,38%** |
+| `gemma4:26b` | 2 544,47 | 2 530,97 | −0,53% |
+| `qwen3.5:27b` | 1 147,86 | 1 149,36 | +0,13% |
+| `gemma4:31b` | 681,35 | 682,93 | +0,23% |
+| `qwen3:30b` | 3 277,27 | 3 309,49 | +0,98% |
+| `qwen3.5:35b` | 2 265,20 | 2 277,04 | +0,52% |
+
+### VRAM i monitoring GPU
+
+| Pomiar | OFF | ON |
+|:--|--:|--:|
+| Najwyższe zarejestrowane zajęcie VRAM | **15 907 / 16 376 MiB (97,1%)** | **15 981 / 16 376 MiB (97,6%)** |
+| Maksymalne próbkowane użycie GPU | 100% | 100% |
+| Maksymalna próbkowana temperatura | 63,37 °C | 61,15 °C |
+| Maksymalny próbkowany pobór mocy | 264,24 W | 249,90 W |
+| Liczba próbek monitoringu | 932 | 924 |
+
+Wyniki pochodzą z sesji oznaczonych OFF i ON z 28 października. CUDA MMA mierzy wydajność syntetyczną; VRAM, temperatura i moc to **maksima w pobranych próbkach**. Część modeli Ollama korzystała też z **RAM/CPU offload**, więc wyniki nie są izolowanym pomiarem Tensor Core. Zmian nie można jeszcze jednoznacznie przypisać modyfikacji firmware.
+
+📁 **[Pełny raport, testy 256 tokenów, metodologia i dane CSV](docs/BENCHMARKS-2026-10-28.md)**
+
 ## Benchmark CUDA
 
 | Operacja | Zgłoszony najlepszy wynik |
@@ -33,14 +87,6 @@ W logu próby odnotowano `Transaction result=0` oraz `TRANSACTION OK`. Windows n
 
 Są to wyniki **syntetycznego benchmarku instrukcji**, nie FPS w grach. Wynik FFMA jest zachowany w oryginalnym lokalnym transkrypcie, a szczytowe wartości Tensor pochodzą z podsumowania testów. **Nie mamy pomiaru sprzed odblokowania na tej samej karcie w identycznych warunkach**, więc nie można stwierdzić, że w tym przypadku osiągnięto wzrost o 2×.
 
-
-## Nowe wyniki ON/OFF — 28.10.2026
-
-W kolejnej serii (2 przebiegi rozgrzewkowe + 3 pomiarowe) testy syntetyczne wykazały **FP16→FP32: 98,13 → 196,40 TFLOPS (+100,1%)** i **BF16→FP32: 97,60 → 195,87 TFLOPS (+100,7%)** pomiędzy trybami oznaczonymi OFF i ON. W sześciu modelach Ollama nie zaobserwowano porównywalnego przyspieszenia generowania 512 tokenów (różnice od −0,11% do +0,72%). W trybie ON zanotowano maksymalnie **15 981 / 16 376 MiB VRAM (97,6%)**.
-
-> **Zastrzeżenie:** `unlock_verified=false` w obu raportach. ON/OFF to etykiety deklarowanego sposobu uruchomienia; wyniki nie potwierdzają niezależnie odblokowania dodatkowych jednostek Tensor.
-
-📊 **[Pełne tabele ON/OFF, opis testów i dane CSV](docs/BENCHMARKS-2026-10-28.md)**
 
 ## Benchmark LLM w Ollama — 27.10.2026
 
