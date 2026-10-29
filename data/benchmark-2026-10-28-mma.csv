@@ -1,0 +1,13 @@
+date,mode,benchmark,measured_runs,mean_tops_or_tflops,sd_tops_or_tflops,unit,unlock_verified
+2026-10-28,OFF,f16/f32,3,98.133,0.189,TFLOPS,false
+2026-10-28,ON,f16/f32,3,196.400,0.000,TFLOPS,false
+2026-10-28,OFF,bf16/f32,3,97.600,0.726,TFLOPS,false
+2026-10-28,ON,bf16/f32,3,195.867,0.125,TFLOPS,false
+2026-10-28,OFF,f16/f16,3,196.033,0.330,TFLOPS,false
+2026-10-28,ON,f16/f16,3,196.300,0.356,TFLOPS,false
+2026-10-28,OFF,s8/s32,3,391.733,0.613,TOPS,false
+2026-10-28,ON,s8/s32,3,391.300,0.000,TOPS,false
+2026-10-28,OFF,dp4a,3,97.467,0.094,TOPS,false
+2026-10-28,ON,dp4a,3,96.100,1.697,TOPS,false
+2026-10-28,OFF,ffma,3,46.933,0.047,TFLOPS,false
+2026-10-28,ON,ffma,3,47.000,0.000,TFLOPS,false
