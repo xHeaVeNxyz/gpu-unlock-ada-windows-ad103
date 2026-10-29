@@ -55,6 +55,12 @@ Compared with the OFF run, the two selected ON measurements show **+33.8%** and 
 
 **Evidence and limitations:** These figures were read from user-supplied PowerShell screenshots. No raw transcripts containing private host details or GPU identifiers are published. The runs were not clock-, power-, thermal-, driver-, or reboot-controlled, and the reported firmware state was not independently corroborated during each LLM benchmark. They represent an **observed association**, not proof that the firmware change alone caused the prefill difference. There is no measured application-speedup claim for gaming, DLSS, or arbitrary LLM workloads; prefill and decode have different bottlenecks. See [machine-readable Ollama summary](../data/ollama-benchmark-summary.csv).
 
-## 5. Source attribution
+## 5. Additional OFF/ON experiments — 28 October 2026
+
+A later local paired test includes six synthetic CUDA MMA operations, six Ollama models, prompt-processing and decode speeds, and sampled VRAM usage. Two synthetic accumulation modes exhibited approximately 2× differences between the operator-labeled OFF/ON boots, while Ollama decode remained essentially unchanged.
+
+**[Open the detailed October 28 tables and sanitized CSV results](BENCHMARKS-2026-10-28.md).** As with the October 27 results, neither the operator label nor the benchmark alone independently verifies a modified GPU resource state.
+
+## 6. Source attribution
 
 See the project's [license](../LICENSE), [upstream notices](../UPSTREAM-WINDOWS-NOTICES.md), and [third-party notices](../THIRD_PARTY_NOTICES.md). NVIDIA firmware binaries are not included.
